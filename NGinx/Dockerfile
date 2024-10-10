@@ -1,14 +1,16 @@
 FROM debian:latest
 
-LABEL thibgrev
-
-COPY ./index.html /usr/share/html/
+LABEL "author"="thibgrev"
 
 RUN apt-get update && apt-get install --no-install-recommends -y nginx; \
  echo "daemon off;" >> /etc/nginx/nginx.conf
 RUN apt-get install curl -y 
-RUN chmod -R 0755 /usr/share/nginx/html
 
+COPY index.html /tmp/nginx/index.html
+COPY nginx.conf /etc/nginx/conf.d/
+
+RUN chmod -R 0755 /tmp/nginx/index.html
+#; chown -R nginx /usr/share/nginx/html
 
 EXPOSE 80
 
