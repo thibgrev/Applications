@@ -101,7 +101,7 @@ Poussez les images sur Docker Hub avec `image_push.sh` :
 ./scripts/image_push.sh
 ```
 
-### 4. Déploiement sur OpenShift
+### 4. Déploiement sur OpenShift (Option 1)
 
 Déployez l'application sur OpenShift avec `ocp_deploy.sh` :
 
@@ -115,15 +115,17 @@ Pour nettoyer les ressources, utilisez :
 ./scripts/ocp_cleanup.sh
 ```
 
-### 5. Déploiement avec Podman
+### 5. Déploiement avec Podman (Option 2)
 
-Pour déployer les conteneurs avec Podman, utilisez `podman_deploy.sh` :
+Alternativement, déployez les conteneurs avec Podman en utilisant `podman_deploy.sh` :
 
 ```bash
 ./scripts/podman_deploy.sh
 ```
 
 Pour redéployer ou supprimer les conteneurs, utilisez `podman_redeploy.sh` ou `podman_remove.sh` respectivement.
+
+> **Note :** Choisissez soit l'étape 4 (OpenShift) soit l'étape 5 (Podman), selon votre choix de plateforme de déploiement. Il n'est pas nécessaire d'effectuer les deux.
 
 ## Remarques
 
