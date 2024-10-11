@@ -45,15 +45,39 @@ Le dossier `frontend` contient le code de l'application web :
 
 ### 3. Scripts
 
-Le dossier `scripts` contient les différents scripts pour automatiser les tâches de déploiement :
-- **config.ini** : Fichier de configuration pour les variables d'environnement.
-- **image_build.sh** : Script pour construire les images Docker.
-- **image_push.sh** : Script pour pousser les images sur le registre Docker Hub.
-- **ocp_deploy.sh** : Script de déploiement sur OpenShift.
-- **ocp_cleanup.sh** : Script pour nettoyer les ressources sur OpenShift.
-- **podman_deploy.sh** : Script pour déployer les conteneurs avec Podman.
-- **podman_redeploy.sh** : Script pour redéployer les conteneurs avec Podman.
-- **podman_remove.sh** : Script pour supprimer les conteneurs avec Podman.
+Le dossier `scripts` contient les différents scripts pour automatiser les tâches de déploiement.
+
+#### Description des scripts
+
+- **config.ini** : Fichier de configuration pour les variables d'environnement nécessaires aux scripts (par exemple, noms de réseau, volume, etc.).
+
+- **image_build.sh** : 
+  - Ce script permet de construire les images Docker pour le frontend et le backend. Il utilise les fichiers Dockerfile situés dans les répertoires correspondants pour créer les images.
+  - Commande : `podman build` ou `docker build` pour créer les images.
+
+- **image_push.sh** :
+  - Ce script pousse les images Docker construites vers un registre Docker, tel que Docker Hub. Il vérifie si l'utilisateur est déjà authentifié, sinon il demande les identifiants.
+  - Commande : `podman push` ou `docker push` pour pousser les images vers le registre.
+
+- **ocp_deploy.sh** :
+  - Permet de déployer les composants de l'application sur un cluster OpenShift. Le script crée les ressources nécessaires (namespace, déploiements, services, routes, etc.) pour le backend PostgreSQL et le frontend.
+  - Commandes utilisées : `oc create`, `oc apply`, etc., pour déployer les ressources sur OpenShift.
+
+- **ocp_cleanup.sh** :
+  - Ce script supprime les ressources créées sur OpenShift pour nettoyer le déploiement. Il supprime le namespace utilisé, ainsi que les objets associés (pods, services, routes, etc.).
+  - Commande : `oc delete` pour supprimer les ressources sur OpenShift.
+
+- **podman_deploy.sh** :
+  - Déploie les conteneurs en utilisant Podman en mode rootless ou root. Il crée les réseaux et volumes nécessaires, puis lance les conteneurs du frontend et du backend en utilisant les images Docker.
+  - Commande : `podman run`, `podman network create`, `podman volume create`.
+
+- **podman_redeploy.sh** :
+  - Redéploie les conteneurs en les arrêtant et les supprimant, puis en les relançant avec les nouvelles configurations ou images.
+  - Commande : `podman rm -f`, suivi de `podman run` pour redéployer les conteneurs.
+
+- **podman_remove.sh** :
+  - Ce script supprime les conteneurs, les réseaux et les volumes créés avec Podman pour le projet. Il assure un nettoyage complet des ressources utilisées.
+  - Commande : `podman rm`, `podman network rm`, `podman volume rm` pour supprimer les ressources associées.
 
 ## Instructions d'Utilisation
 
