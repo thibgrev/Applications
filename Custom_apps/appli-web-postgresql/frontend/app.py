@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 # Informations de connexion à la base de données
 db_config = {
-    'host': 'backend',
+    'host': 'web-postgresql',
     'database': 'individu',
     'user': 'thibgrev',
     'password': 'azerty@12345'

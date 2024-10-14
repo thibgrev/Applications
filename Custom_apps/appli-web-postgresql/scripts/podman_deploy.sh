@@ -9,8 +9,14 @@
     DB_NAME=$(grep -i 'db_name' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     DB_USER=$(grep -i 'db_user' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     DB_PASSWORD=$(grep -i 'db_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    FRONTEND_IMAGE=$(grep -i 'name_image_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    BACKEND_IMAGE=$(grep -i 'name_image_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    SWWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     FRONTEND=$(grep -i 'name_container_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     BACKEND=$(grep -i 'name_container_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    SWAGGER=$(grep -i 'name_container_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
 
 # Vérifier si le réseau existe
 if sudo podman network inspect "$NETWORK_NAME" > /dev/null 2>&1; then
@@ -43,20 +49,26 @@ else
     echo "Le fichier de configuration $CNI_CONFIG_FILE n'existe pas. Assurez-vous que le réseau est créé."
 fi
 
-sudo podman run -d --name $BACKEND \
+sudo podman run -d --name $BACKEND  --network appli-web-postgresql_network \
     --network $NETWORK_NAME \
     -e POSTGRES_DB=$DB_NAME \
     -e POSTGRES_USER=$DB_USER \
     -e POSTGRES_PASSWORD=$DB_PASSWORD \
     -v $STORAGE_NAME:/bitnami/postgresql \
-    docker.io/thibgrev/backend-postgresql:latest
+    $BACKEND_IMAGE
 
 
-sudo podman run -d --name $FRONTEND \
+sudo podman run -d --name $FRONTEND --network appli-web-postgresql_network \
     --network $NETWORK_NAME \
     -e DB_HOST=$BACKEND \
     -e DB_NAME=$DB_NAME \
     -e DB_USER=$DB_USER \
     -e DB_PASSWORD=$DB_PASSWORD \
     -p 5000:5000 \
-    docker.io/thibgrev/frontend-web:latest
+    $FRONTEND_IMAGE
+
+sudo podman run -d --name $API --network appli-web-postgresql_network \
+  -p 2626:2626 $API_IMAGE
+
+sudo podman run --name $SWAGGER --network appli-web-postgresql_network \
+  -p 5000:5000 $SWWAGGER_IMAGE

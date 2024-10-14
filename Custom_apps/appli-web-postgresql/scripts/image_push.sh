@@ -6,6 +6,8 @@
     # Extraire les valeurs du fichier .ini
     FRONTEND_IMAGE=$(grep -i 'name_image_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     BACKEND_IMAGE=$(grep -i 'name_image_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    SWWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
 
 # Vérifier si l'utilisateur est déjà authentifié sur docker.io
 if podman login --get-login docker.io > /dev/null 2>&1; then
@@ -43,5 +45,11 @@ podman push $FRONTEND_IMAGE
 
 echo "Poussée de l'image backend..."
 podman push $BACKEND_IMAGE
+
+echo "Poussée de l'image api..."
+podman push $API_IMAGE
+
+echo "Poussée de l'image swagger..."
+podman push $SWAGGER_IMAGE
 
 echo "Images poussées sur la registry avec succès."
