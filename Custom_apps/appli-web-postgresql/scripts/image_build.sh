@@ -7,7 +7,7 @@
     FRONTEND_IMAGE=$(grep -i 'name_image_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     BACKEND_IMAGE=$(grep -i 'name_image_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    SWWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    $SWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
 
 # Build de l'image frontend
 echo "Construction de l'image frontend..."
@@ -25,4 +25,4 @@ podman build -t $API_IMAGE ../API/
 echo "Construction de l'image swagger..."
 podman build -t $SWAGGER_IMAGE ../swagger/
 
-echo "Images podman construites avec succès."
+echo "Images podman construites."
