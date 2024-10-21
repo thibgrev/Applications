@@ -9,6 +9,9 @@ COPY app.py /app/app.py
 # Copier le dossier templates pour les fichiers HTML
 COPY templates /app/templates
 
+# Copier le répertoire static pour les fichiers statiques
+COPY static /app/static
+
 # Définir le dossier de travail
 WORKDIR /app
 

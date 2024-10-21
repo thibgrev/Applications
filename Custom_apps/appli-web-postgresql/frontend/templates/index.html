@@ -12,34 +12,62 @@
   <!-- Custom CSS -->
   <style>
     body {
-      padding: 20px;
+      padding: 0;
+      margin: 0;
       background-color: #f4f4f9;
     }
     .container {
       margin-top: 50px;
     }
-    table {
-      margin-top: 20px;
-    }
-    .form-container {
+    .table-container {
       background-color: white;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-    .loader {
-      display: none;
+    header {
+      background-color: #2196F3;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      color: white;
+    }
+    header img {
+      height: 50px;
+      margin-right: 20px;
+    }
+    footer {
+      background-color: #e0e0e0;
+      padding: 10px;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+      text-align: center;
+    }
+    .italic-text {
+      font-style: italic;
+      color: #757575;
     }
   </style>
 </head>
 <body>
 
+  <!-- Bandeau haut de page -->
+  <header>
+    <img src="/static/HS.png" alt="Logo">
+    <h5>Démonstration Conteneur</h5>
+  </header>
+
   <div class="container">
+    <!-- Titre principal -->
     <h3 class="center-align">Gestion des Utilisateurs</h3>
 
+    <!-- Paragraphe explicatif -->
+    <p class="center-align">Cette page permet de gérer les utilisateurs dans une base de données. Vous pouvez ajouter, afficher et supprimer des utilisateurs via le formulaire et le tableau ci-dessous.</p>
+
     <!-- Formulaire pour ajouter un utilisateur -->
-    <div class="row form-container">
-      <form id="user-form">
+    <div class="row table-container">
+      <form action="/add" method="post">
         <div class="row">
           <div class="input-field col s6">
             <input id="nom" name="nom" type="text" class="validate" required>
@@ -60,20 +88,19 @@
             <label for="informations">Informations</label>
           </div>
         </div>
-        <div class="row">
-          <button class="btn waves-effect waves-light" type="submit" id="add-user-btn">Ajouter Utilisateur
-            <i class="material-icons right">person_add</i>
-          </button>
-        </div>
+        <button class="btn waves-effect waves-light" type="submit">Ajouter Utilisateur
+          <i class="material-icons right">person_add</i>
+        </button>
       </form>
     </div>
 
     <!-- Table des utilisateurs -->
-    <div class="row">
+    <div class="row table-container">
       <table class="striped centered responsive-table">
         <thead>
           <tr>
-            <th>Identifiant</th>
+            <th>Identifiant</th> <!-- Ajout de l'identifiant -->
+            <th>Numéro</th>
             <th>Nom</th>
             <th>Prénom</th>
             <th>Âge</th>
@@ -81,78 +108,31 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="user-table">
-          <!-- Les utilisateurs seront insérés ici -->
+        <tbody>
+          {% for personne in personnes %}
+          <tr>
+            <td>{{ personne[0] }}</td> <!-- Afficher l'identifiant -->
+            <td>{{ personne[5] }}</td> <!-- Afficher le champ numero -->
+            <td>{{ personne[1] }}</td>
+            <td>{{ personne[2] }}</td>
+            <td>{{ personne[3] }}</td>
+            <td>{{ personne[4] }}</td>
+            <td><a href="/delete/{{ personne[0] }}" class="btn red"><i class="material-icons">delete</i> RM</a></td>
+          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Materialize JS, jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bandeau bas de page -->
+  <footer>
+    <p>Serveur Base de Données : {{ db_config['host'] }} | Utilisateur : {{ db_config['user'] }} | Mot de passe : {{ db_config['password'] }}</p>
+    <p class="italic-text">Cette page est destinée uniquement à des fins de test. Ne pas utiliser en environnement de production.</p>
+  </footer>
+
+  <!-- Materialize JS and jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-  <script>
-    $(document).ready(function() {
-      // Charger les utilisateurs lors du chargement de la page
-      loadUsers();
-
-      // Soumission du formulaire pour ajouter un utilisateur
-      $('#user-form').submit(function(event) {
-        event.preventDefault(); // Empêche le rechargement de la page
-
-        const userData = {
-          nom: $('#nom').val(),
-          prenom: $('#prenom').val(),
-          age: $('#age').val(),
-          informations: $('#informations').val()
-        };
-
-        $.ajax({
-          url: '/add',
-          method: 'POST',
-          data: userData,
-          success: function(response) {
-            // Réinitialiser le formulaire
-            $('#user-form')[0].reset();
-            // Recharger la table des utilisateurs
-            loadUsers();
-            M.toast({html: 'Utilisateur ajouté avec succès!'});
-          },
-          error: function() {
-            M.toast({html: 'Erreur lors de l\'ajout de l\'utilisateur.'});
-          }
-        });
-      });
-
-      // Fonction pour charger et afficher les utilisateurs
-      function loadUsers() {
-        $.ajax({
-          url: '/',
-          method: 'GET',
-          success: function(data) {
-            $('#user-table').html(data);
-          }
-        });
-      }
-
-      // Suppression de l'utilisateur
-      $(document).on('click', '.delete-user', function() {
-        const userId = $(this).data('id');
-        $.ajax({
-          url: `/delete/${userId}`,
-          method: 'GET',
-          success: function() {
-            loadUsers();
-            M.toast({html: 'Utilisateur supprimé avec succès!'});
-          },
-          error: function() {
-            M.toast({html: 'Erreur lors de la suppression.'});
-          }
-        });
-      });
-    });
-  </script>
 
 </body>
 </html>

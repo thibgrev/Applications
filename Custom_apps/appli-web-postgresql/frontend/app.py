@@ -1,9 +1,9 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for, flash
 import psycopg2
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Nécessaire pour utiliser flash()
 
-# Informations de connexion à la base de données
 db_config = {
     'host': 'web-postgresql',
     'database': 'individu',
@@ -23,19 +23,14 @@ def index():
         cur = conn.cursor()
         cur.execute("SELECT * FROM personne")
         personnes = cur.fetchall()
-        cur.execute("SELECT version()")
-        postgres_version = cur.fetchone()[0]
-        db_status = "Succès"
     except Exception as e:
         personnes = []
-        postgres_version = "Inconnu"
-        db_status = f"Échec ({e})"
+        print(f"Erreur de connexion à la base de données : {e}")
     finally:
         if 'conn' in locals():
             conn.close()
 
-    # Utilisation de render_template pour charger le fichier HTML externe
-    return render_template('index.html', db_status=db_status, db_config=db_config, personnes=personnes, postgres_version=postgres_version)
+    return render_template('index.html', personnes=personnes, db_config=db_config)
 
 @app.route('/add', methods=['POST'])
 def add_personne():
@@ -47,15 +42,19 @@ def add_personne():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("INSERT INTO personne (Nom, Prenom, age, Informations) VALUES (%s, %s, %s, %s)", (nom, prenom, age, informations))
+
+        # Insertion sans gestion manuelle de l'identifiant (la base de données le gère)
+        cur.execute("INSERT INTO personne (Nom, Prenom, age, Informations) VALUES (%s, %s, %s, %s)", 
+                    (nom, prenom, age, informations))
         conn.commit()
+        flash('Utilisateur ajouté avec succès', 'success')
     except Exception as e:
-        print(f"Erreur lors de l'insertion : {e}")
+        flash(f'Erreur lors de l\'ajout de l\'utilisateur : {e}', 'error')
     finally:
         if 'conn' in locals():
             conn.close()
 
-    return index()
+    return redirect(url_for('index'))
 
 @app.route('/delete/<int:id>')
 def delete_personne(id):
@@ -64,13 +63,14 @@ def delete_personne(id):
         cur = conn.cursor()
         cur.execute("DELETE FROM personne WHERE Identifiant = %s", (id,))
         conn.commit()
+        flash('Utilisateur supprimé avec succès', 'success')
     except Exception as e:
-        print(f"Erreur lors de la suppression : {e}")
+        flash(f'Erreur lors de la suppression : {e}', 'error')
     finally:
         if 'conn' in locals():
             conn.close()
 
-    return index()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
