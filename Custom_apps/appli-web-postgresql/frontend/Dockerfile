@@ -6,6 +6,9 @@ RUN pip install flask psycopg2-binary
 # Copier l'application
 COPY app.py /app/app.py
 
+# Copier le dossier templates pour les fichiers HTML
+COPY templates /app/templates
+
 # Définir le dossier de travail
 WORKDIR /app
 

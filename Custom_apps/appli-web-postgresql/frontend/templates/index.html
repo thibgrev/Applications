@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion Utilisateurs - Material Design</title>
+
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    table {
+      margin-top: 20px;
+    }
+    .form-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .loader {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h3 class="center-align">Gestion des Utilisateurs</h3>
+
+    <!-- Formulaire pour ajouter un utilisateur -->
+    <div class="row form-container">
+      <form id="user-form">
+        <div class="row">
+          <div class="input-field col s6">
+            <input id="nom" name="nom" type="text" class="validate" required>
+            <label for="nom">Nom</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="prenom" name="prenom" type="text" class="validate" required>
+            <label for="prenom">Prénom</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <input id="age" name="age" type="number" class="validate" required>
+            <label for="age">Âge</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="informations" name="informations" type="text" class="validate" required>
+            <label for="informations">Informations</label>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn waves-effect waves-light" type="submit" id="add-user-btn">Ajouter Utilisateur
+            <i class="material-icons right">person_add</i>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Table des utilisateurs -->
+    <div class="row">
+      <table class="striped centered responsive-table">
+        <thead>
+          <tr>
+            <th>Identifiant</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Âge</th>
+            <th>Informations</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="user-table">
+          <!-- Les utilisateurs seront insérés ici -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Materialize JS, jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Charger les utilisateurs lors du chargement de la page
+      loadUsers();
+
+      // Soumission du formulaire pour ajouter un utilisateur
+      $('#user-form').submit(function(event) {
+        event.preventDefault(); // Empêche le rechargement de la page
+
+        const userData = {
+          nom: $('#nom').val(),
+          prenom: $('#prenom').val(),
+          age: $('#age').val(),
+          informations: $('#informations').val()
+        };
+
+        $.ajax({
+          url: '/add',
+          method: 'POST',
+          data: userData,
+          success: function(response) {
+            // Réinitialiser le formulaire
+            $('#user-form')[0].reset();
+            // Recharger la table des utilisateurs
+            loadUsers();
+            M.toast({html: 'Utilisateur ajouté avec succès!'});
+          },
+          error: function() {
+            M.toast({html: 'Erreur lors de l\'ajout de l\'utilisateur.'});
+          }
+        });
+      });
+
+      // Fonction pour charger et afficher les utilisateurs
+      function loadUsers() {
+        $.ajax({
+          url: '/',
+          method: 'GET',
+          success: function(data) {
+            $('#user-table').html(data);
+          }
+        });
+      }
+
+      // Suppression de l'utilisateur
+      $(document).on('click', '.delete-user', function() {
+        const userId = $(this).data('id');
+        $.ajax({
+          url: `/delete/${userId}`,
+          method: 'GET',
+          success: function() {
+            loadUsers();
+            M.toast({html: 'Utilisateur supprimé avec succès!'});
+          },
+          error: function() {
+            M.toast({html: 'Erreur lors de la suppression.'});
+          }
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

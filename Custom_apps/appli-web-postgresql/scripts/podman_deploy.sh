@@ -12,7 +12,7 @@
     FRONTEND_IMAGE=$(grep -i 'name_image_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     BACKEND_IMAGE=$(grep -i 'name_image_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    SWWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    SWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     FRONTEND=$(grep -i 'name_container_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     BACKEND=$(grep -i 'name_container_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
@@ -70,5 +70,5 @@ sudo podman run -d --name $FRONTEND --network appli-web-postgresql_network \
 sudo podman run -d --name $API --network appli-web-postgresql_network \
   -p 2626:2626 $API_IMAGE
 
-sudo podman run --name $SWAGGER --network appli-web-postgresql_network \
-  -p 5000:5000 $SWWAGGER_IMAGE
+sudo podman run -d --name $SWAGGER --network appli-web-postgresql_network \
+  -p 10000:5000 $SWAGGER_IMAGE
