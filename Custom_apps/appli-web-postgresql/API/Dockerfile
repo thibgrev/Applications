@@ -1,16 +1,16 @@
-# Utiliser une image Python de base
+# Utiliser une image Python standard
 FROM python:3.9-slim
 
-# Installer Flask, psycopg2-binary, et Gunicorn
+# Installer les dépendances
 WORKDIR /app
-COPY requirements.txt requirements.txt
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier l'application Flask
-COPY app.py /app/app.py
+# Copier le code de l'application
+COPY . /app
 
-# Exposer le port sur lequel l'application écoutera
+# Exposer le port de l'API
 EXPOSE 8000
 
-# Utiliser ENTRYPOINT pour démarrer Gunicorn
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
+# Lancer l'application avec Uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

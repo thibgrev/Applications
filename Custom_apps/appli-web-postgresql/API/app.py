@@ -1,104 +1,97 @@
-from flask import Flask, request, jsonify
-import psycopg2
-import os
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List
+from psycopg2 import connect, OperationalError
+from psycopg2.extras import RealDictCursor
 
-app = Flask(__name__)
+# Initialisation de l'application FastAPI
+app = FastAPI()
 
-# Fonction pour obtenir une connexion à la base de données PostgreSQL
-def get_db_connection():
-    conn = psycopg2.connect(
-        host=os.getenv('DB_HOST', 'localhost'),     # Nom de l'hôte de la base de données
-        database=os.getenv('DB_NAME', 'individu'),  # Nom de la base de données
-        user=os.getenv('DB_USER', 'thibgrev'),      # Nom d'utilisateur PostgreSQL
-        password=os.getenv('DB_PASSWORD', 'azerty@12345')  # Mot de passe PostgreSQL
-    )
-    return conn
+# Configuration de la base de données
+DB_CONFIG = {
+    "dbname": "individu",
+    "user": "thibgrev",
+    "password": "azerty@12345",
+    "host": "web-postgresql"
+}
 
-# Route pour obtenir toutes les personnes
-@app.route('/personnes', methods=['GET'])
+# Modèle Pydantic pour les données de la table personne
+class Person(BaseModel):
+    identifiant: int = None
+    nom: str
+    prenom: str
+    age: int
+    informations: str
+
+# Route de test de connexion à la base de données
+@app.get("/")
+def test_db_connection():
+    try:
+        # Tentative de connexion à la base de données
+        with connect(**DB_CONFIG) as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("SELECT 1")
+        return {"message": "Connexion OK"}
+    except OperationalError as e:
+        # En cas d'erreur de connexion, retour de l'erreur
+        return {"error": str(e)}
+
+# Route pour obtenir la liste de toutes les personnes
+@app.get("/personnes", response_model=List[Person])
 def get_personnes():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM personne;')
-    personnes = cur.fetchall()
-    cur.close()
-    conn.close()
+    try:
+        with connect(**DB_CONFIG) as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("SELECT * FROM personne")
+                personnes = cursor.fetchall()
+        return personnes
+    except OperationalError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    results = []
-    for row in personnes:
-        results.append({
-            'Identifiant': row[0],
-            'Nom': row[1],
-            'Prenom': row[2],
-            'Age': row[3],
-            'Informations': row[4]
-        })
-    return jsonify(results)
-
-# Route pour obtenir une personne par son identifiant
-@app.route('/personnes/<int:id>', methods=['GET'])
-def get_personne(id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM personne WHERE Identifiant = %s;', (id,))
-    personne = cur.fetchone()
-    cur.close()
-    conn.close()
-
-    if personne is None:
-        return jsonify({'error': 'Personne non trouvée'}), 404
-
-    result = {
-        'Identifiant': personne[0],
-        'Nom': personne[1],
-        'Prenom': personne[2],
-        'Age': personne[3],
-        'Informations': personne[4]
-    }
-    return jsonify(result)
-
-# Route pour ajouter une nouvelle personne
-@app.route('/personnes', methods=['POST'])
-def create_personne():
-    new_personne = request.get_json()
-
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(
-        'INSERT INTO personne (Nom, Prenom, Age, Informations) VALUES (%s, %s, %s, %s)',
-        (new_personne['Nom'], new_personne['Prenom'], new_personne['Age'], new_personne['Informations'])
-    )
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return jsonify({'message': 'Personne ajoutée avec succès'}), 201
+# Route pour créer une nouvelle personne
+@app.post("/personnes", response_model=Person)
+def create_personne(person: Person):
+    try:
+        with connect(**DB_CONFIG) as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "INSERT INTO personne (nom, prenom, age, informations) VALUES (%s, %s, %s, %s) RETURNING *",
+                    (person.nom, person.prenom, person.age, person.informations)
+                )
+                conn.commit()
+                new_person = cursor.fetchone()
+        return new_person
+    except OperationalError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Route pour mettre à jour une personne existante
-@app.route('/personnes/<int:id>', methods=['PUT'])
-def update_personne(id):
-    updated_personne = request.get_json()
+@app.put("/personnes/{identifiant}", response_model=Person)
+def update_personne(identifiant: int, person: Person):
+    try:
+        with connect(**DB_CONFIG) as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "UPDATE personne SET nom=%s, prenom=%s, age=%s, informations=%s WHERE identifiant=%s RETURNING *",
+                    (person.nom, person.prenom, person.age, person.informations, identifiant)
+                )
+                conn.commit()
+                updated_person = cursor.fetchone()
+                if updated_person is None:
+                    raise HTTPException(status_code=404, detail="Person not found")
+        return updated_person
+    except OperationalError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(
-        'UPDATE personne SET Nom = %s, Prenom = %s, Age = %s, Informations = %s WHERE Identifiant = %s',
-        (updated_personne['Nom'], updated_personne['Prenom'], updated_personne['Age'], updated_personne['Informations'], id)
-    )
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return jsonify({'message': 'Personne mise à jour avec succès'}), 200
-
-# Route pour supprimer une personne par son identifiant
-@app.route('/personnes/<int:id>', methods=['DELETE'])
-def delete_personne(id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('DELETE FROM personne WHERE Identifiant = %s;', (id,))
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return jsonify({'message': 'Personne supprimée avec succès'}), 200
+# Route pour supprimer une personne
+@app.delete("/personnes/{identifiant}")
+def delete_personne(identifiant: int):
+    try:
+        with connect(**DB_CONFIG) as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("DELETE FROM personne WHERE identifiant=%s RETURNING *", (identifiant,))
+                conn.commit()
+                if cursor.rowcount == 0:
+                    raise HTTPException(status_code=404, detail="Person not found")
+        return {"message": "Person deleted"}
+    except OperationalError as e:
+        raise HTTPException(status_code=500, detail=str(e))
