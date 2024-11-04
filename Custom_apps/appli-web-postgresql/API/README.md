@@ -1,12 +1,10 @@
-
 # API Component
 
 ## Description
-This component is responsible for handling API requests to interact with the PostgreSQL database. It includes an Nginx configuration to handle requests.
+This component is responsible for handling API requests to interact with the PostgreSQL database.
 
 ## Files
 - `app.py`: Main application file with route definitions for API endpoints.
-- `nginx.conf`: Nginx configuration file to manage request routing for the API.
 - `Dockerfile`: Dockerfile to build the API container image.
 - `requirements.txt`: Python dependencies required for running the API.
 
