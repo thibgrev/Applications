@@ -62,8 +62,8 @@ appli-web-postgresql/
 
 ### API
 - **Description** : L'API REST permet d'interagir avec la base de données PostgreSQL. Les routes sont définies dans `app.py` et une configuration Nginx (`nginx.conf`) est incluse pour gérer les requêtes.
-- **Documentation Swagger** : Accessible à l’URL `/swagger` une fois déployée. Swagger fournit une interface pour tester les endpoints.
-- **Fichiers principaux** : `app.py`, `nginx.conf`, `Dockerfile`.
+- **Documentation Swagger** : Accessible à l’URL `/docs` une fois déployée. Swagger fournit une interface pour tester les endpoints.
+- **Fichiers principaux** : `app.py`, `Dockerfile`.
 
 ### Backend
 - **Description** : Ce composant gère la base de données PostgreSQL et initialise les données nécessaires.
@@ -78,12 +78,14 @@ appli-web-postgresql/
 ### Swagger
 - **Emplacement des fichiers** : `appli-web-postgresql/swagger/`.
 - **Fichiers principaux** : `app.py` pour Swagger, `Dockerfile`, `requirements.txt`.
-- **URL d'accès** : Accédez à Swagger via `/swagger` pour documenter et tester l'API.
+- **URL d'accès** : Accédez à Swagger via `/apidocs` pour documenter et tester l'API.
 
 ## URLs du Projet
 En utilisant `http://localhost` comme base URL :
 - **Frontend** : `http://localhost:5000` - Interface utilisateur principale.
-- **API** : `http://localhost:8000/api` - Endpoints pour accéder aux données via l'API REST.
+- **API** : `http://localhost:8000/` - Endpoints pour accéder aux données via l'API REST (Doit afficher "Connexion OK")
+- **API** : `http://localhost:8000/docs` - Endpoints pour accéder aa la doc swagger
+- **API** : `http://localhost:8000/personnes` - Endpoints pour lister les personnes de la database
 - **Swagger** : `http://localhost:8000/swagger` - Documentation interactive de l'API, permettant de tester les endpoints.
 
 ## Scripts de déploiement
