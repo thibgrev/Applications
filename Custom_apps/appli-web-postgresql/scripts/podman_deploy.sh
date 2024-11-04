@@ -68,7 +68,7 @@ sudo podman run -d --name $FRONTEND --network appli-web-postgresql_network \
     $FRONTEND_IMAGE
 
 sudo podman run -d --name $API --network appli-web-postgresql_network \
-  -p 2626:2626 $API_IMAGE
+  -p 8000:8000 $API_IMAGE
 
 sudo podman run -d --name $SWAGGER --network appli-web-postgresql_network \
   -p 10000:5000 $SWAGGER_IMAGE
