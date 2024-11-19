@@ -1,0 +1,1 @@
+sudo podman rm -af; sudo sh image_build.sh; sudo sh image_push.sh; sudo sh podman_redeploy.sh
