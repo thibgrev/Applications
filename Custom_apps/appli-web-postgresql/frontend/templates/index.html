@@ -63,9 +63,60 @@
     <h3 class="center-align">Gestion des utilisateurs</h3>
 
     <!-- Paragraphe explicatif -->
-    <li><p class="center-align">Management des données liées aux personnes inscrites dans la base de données</p></li>
-    <li><p class="center-align">Possibilité d'ajouter des personnes via le formulaire ci-dessous</p></li>
-    <li><p class="center-align">Possibilité de supprimer des personnes via le tableau ci-dessous</p></li>
+    <center>Objectifs: management des données liées aux personnes inscrites dans la base de données</center>
+    <center>1) Possibilité d'ajouter des personnes via le formulaire ci-dessous</center>
+    <center>2) Possibilité de supprimer des personnes via le tableau ci-dessous</center>
+    <center>Pour rappel, les données sont stockées dans une base de données PostgreSQL avec persistant volum</center>
+    
+    <!-- Listing des liens -->
+    <h3 class="center-align">Liens disponibles</h3>
+    <div class="row table-container">
+      <!-- Interface utilisateur -->
+        <div class="row">
+          <div class="input-field col s6">
+            <a href="http://localhost:5000">http://localhost:5000</a>
+          </div>
+          <div class="input-field col s6">
+            <label for="iu">Interface utilisateur</label>
+          </div>
+        </div>
+      <!-- Interface connexion API -->
+      <div class="row">
+        <div class="input-field col s6">
+          <a href="http://localhost:8000">http://localhost:8000</a>
+        </div>
+        <div class="input-field col s6">
+          <label for="iu">Interface API, test de la connexion</label>
+        </div>
+      </div>
+      <!-- Interface connexion API Doc -->
+      <div class="row">
+        <div class="input-field col s6">
+          <a href="http://localhost:8000/docs">http://localhost:8000/docs</a>
+        </div>
+        <div class="input-field col s6">
+          <label for="iu">Interface API, documentation</label>
+        </div>
+      </div>
+      <!-- Interface connexion API liste personnes -->
+      <div class="row">
+        <div class="input-field col s6">
+          <a href="http://localhost:8000/personnes">http://localhost:8000/personnes</a>
+        </div>
+        <div class="input-field col s6">
+          <label for="iu">Interface API, liste des personnes</label>
+        </div>
+      </div>
+      <!-- Interface connexion Swagger -->
+      <div class="row">
+        <div class="input-field col s6">
+          <a href="http://localhost:10000/personnes">http://localhost:10000/personnes</a>
+        </div>
+        <div class="input-field col s6">
+          <label for="iu">Interface SWAGGER, liste des personnes</label>
+        </div>
+      </div>
+    </div>
 
     <!-- Formulaire pour ajouter un utilisateur -->
     <h3 class="center-align">Ajout de personnes dans la base de données</h3>
@@ -127,6 +178,7 @@
         </tbody>
       </table>
     </div>
+
   </div>
 
   <!-- Bandeau bas de page -->
