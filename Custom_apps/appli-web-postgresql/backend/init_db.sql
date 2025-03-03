@@ -11,4 +11,4 @@ INSERT INTO personne (Nom, Prenom, age, Informations) VALUES
 ('Martin', 'Lucie', 25, 'Développeur web'),
 ('Bernard', 'Paul', 45, 'Chef de projet'),
 ('Durand', 'Marie', 28, 'Designer graphique'),
-('Petit', 'Sophie', 35, 'Responsable RH');
+('Petit', 'Sofie', 35, 'Responsable RH');
