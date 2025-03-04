@@ -8,6 +8,7 @@
     BACKEND=$(grep -i 'name_container_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     SWAGGER=$(grep -i 'name_container_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    PGADMIN=$(grep -i 'name_container_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
 
 echo "Supression des conteneurs"
 # Vérifier si le conteneur FRONTEND existe
@@ -44,6 +45,15 @@ if sudo podman ps -a --format "{{.Names}}" | grep -w "$SWAGGER" > /dev/null 2>&1
     echo "Conteneur $SWAGGER supprimé avec succès."
 else
     echo "Le conteneur $SWAGGER n'existe pas. Aucune suppression nécessaire."
+fi
+
+# Vérifier si le conteneur PGADMIN existe
+if sudo podman ps -a --format "{{.Names}}" | grep -w "$PGADMIN" > /dev/null 2>&1; then
+    echo "Le conteneur $PGADMIN existe. Suppression en cours..."
+    sudo podman rm -f "$PGADMIN"
+    echo "Conteneur $PGADMIN supprimé avec succès."
+else
+    echo "Le conteneur $PGADMIN n'existe pas. Aucune suppression nécessaire."
 fi
 
 echo "Appel du script podman_deploy.sh pour deployer l application"
