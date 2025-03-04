@@ -1,27 +1,32 @@
 #!/bin/bash
 
-#Identification des valeurs du fichier INI
-    # Lire le fichier de configuration
+#Use of INI file to get value
+    #Path of INI file
     CONFIG_FILE="./config.ini"
-    # Extraire les valeurs du fichier .ini
-    NETWORK_NAME=$(grep -i 'network_name' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    STORAGE_NAME=$(grep -i 'storage_name' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    DB_NAME=$(grep -i 'db_name' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    DB_USER=$(grep -i 'db_user' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    DB_PASSWORD=$(grep -i 'db_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    FRONTEND_IMAGE=$(grep -i 'name_image_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    BACKEND_IMAGE=$(grep -i 'name_image_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    SWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    FRONTEND=$(grep -i 'name_container_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    BACKEND=$(grep -i 'name_container_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    SWAGGER=$(grep -i 'name_container_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    PGADMIN_IMAGE=$(grep -i 'name_image_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    PGADMIN=$(grep -i 'name_container_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    PGADMIN_EMAIL=$(grep -i 'pgadmin_email' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    PGADMIN_PASSWORD=$(grep -i 'pgadmin_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    PGADMIN_PORT=$(grep -i 'pgadmin_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    #Get all values of INI file
+        #System values to use
+            NETWORK_NAME=$(grep -i 'network_name' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            STORAGE_NAME=$(grep -i 'storage_name' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+        #SGBD values
+            DB_NAME=$(grep -i 'db_name' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            DB_USER=$(grep -i 'db_user' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            DB_PASSWORD=$(grep -i 'db_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+        #Name of image to use
+            FRONTEND_IMAGE=$(grep -i 'name_image_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            BACKEND_IMAGE=$(grep -i 'name_image_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGADMIN_IMAGE=$(grep -i 'name_image_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            SWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+        #Name of deployed conteneurs
+            FRONTEND=$(grep -i 'name_container_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            BACKEND=$(grep -i 'name_container_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            SWAGGER=$(grep -i 'name_container_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGADMIN=$(grep -i 'name_container_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+        #Value for PGAdmin deplyment
+            PGADMIN_EMAIL=$(grep -i 'pgadmin_email' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGADMIN_PASSWORD=$(grep -i 'pgadmin_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGADMIN_PORT=$(grep -i 'pgadmin_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
 
 # Vérifier si le réseau existe
 if sudo podman network inspect "$NETWORK_NAME" > /dev/null 2>&1; then
@@ -81,5 +86,9 @@ sudo podman run -d --name $SWAGGER --network $NETWORK_NAME \
 sudo podman run -d --name $PGADMIN --network $NETWORK_NAME \
     -e 'PGADMIN_DEFAULT_EMAIL='$PGADMIN_EMAIL \
     -e 'PGADMIN_DEFAULT_PASSWORD='$PGADMIN_PASSWORD \
+    -e 'PGADMIN_CONFIG_SERVER_MODE=False' \
+    -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False' \
+    -e 'PGADMIN_DISABLE_POSTGRES_MASTER_PASSWORD=True' \
+    -v ../PGAdmin/config.json:/pgadmin4/servers.json \
     -p $PGADMIN_PORT:80 \
     $PGADMIN_IMAGE

@@ -1,0 +1,15 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "web-postgresql",
+            "Group": "Servers",
+            "Host": "web-postgresql",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "thibgrev",
+            "Password": "azerty@12345",
+            "SSLMode": "prefer",
+            "Comment": "Auto-configured PostgreSQL server"
+        }
+    }
+}
