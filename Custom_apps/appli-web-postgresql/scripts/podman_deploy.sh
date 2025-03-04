@@ -96,7 +96,7 @@
         -e 'PGADMIN_DEFAULT_PASSWORD='$PGADMIN_PASSWORD \
         -e 'PGADMIN_CONFIG_SERVER_MODE=False' \
         -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False' \
-        -e 'PGADMIN_DISABLE_POSTGRES_MASTER_PASSWORD=True' \
+        -e 'PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False' \
         -v ../PGAdmin/config.json:/pgadmin4/servers.json \
         -p $PGADMIN_PORT:80 \
         $PGADMIN_IMAGE
