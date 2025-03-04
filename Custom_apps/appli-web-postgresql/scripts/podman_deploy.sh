@@ -27,6 +27,10 @@
             PGADMIN_EMAIL=$(grep -i 'pgadmin_email' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_PASSWORD=$(grep -i 'pgadmin_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_PORT=$(grep -i 'pgadmin_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+        #Network Port
+            FRONTEND_PORT=$(grep -i 'frontend_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            API_PORT=$(grep -i 'api_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            SWAGGER_PORT=$(grep -i 'swagger_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
 
 # Vérifier si le réseau existe
 if sudo podman network inspect "$NETWORK_NAME" > /dev/null 2>&1; then
@@ -74,14 +78,14 @@ sudo podman run -d --name $FRONTEND --network appli-web-postgresql_network \
     -e DB_NAME=$DB_NAME \
     -e DB_USER=$DB_USER \
     -e DB_PASSWORD=$DB_PASSWORD \
-    -p 5000:5000 \
+    -p $FRONTEND_PORT:5000 \
     $FRONTEND_IMAGE
 
 sudo podman run -d --name $API --network $NETWORK_NAME \
-  -p 8000:8000 $API_IMAGE
+  -p $API_PORT:8000 $API_IMAGE
 
 sudo podman run -d --name $SWAGGER --network $NETWORK_NAME \
-  -p 10000:5000 $SWAGGER_IMAGE
+  -p $SWAGGER_PORT:5000 $SWAGGER_IMAGE
 
 sudo podman run -d --name $PGADMIN --network $NETWORK_NAME \
     -e 'PGADMIN_DEFAULT_EMAIL='$PGADMIN_EMAIL \
