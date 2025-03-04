@@ -100,3 +100,12 @@
         -v ../PGAdmin/config.json:/pgadmin4/servers.json \
         -p $PGADMIN_PORT:80 \
         $PGADMIN_IMAGE
+
+# Attendre que pgAdmin soit prêt
+sleep 10
+
+# Copier le script de configuration dans le conteneur pgAdmin
+sudo podman cp ../PGAdmin/setup_pgadmin.py $PGADMIN:/pgadmin4/setup_pgadmin.py
+
+# Exécuter le script de configuration de pgAdmin
+sudo podman exec -it $PGADMIN python /pgadmin4/setup_pgadmin.py
