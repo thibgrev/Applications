@@ -17,6 +17,7 @@
             API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_IMAGE=$(grep -i 'name_image_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             SWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGCONFADMIN_IMAGE=$(grep -i 'name_image_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
         #Name of deployed conteneurs
             FRONTEND=$(grep -i 'name_container_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             BACKEND=$(grep -i 'name_container_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
@@ -29,7 +30,6 @@
             PGADMIN_PORT=$(grep -i 'pgadmin_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
         #Value for PGAdmin Conf deployment
             PGCONFADMIN=$(grep -i 'name_container_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-            PGCONFADMIN_IMAGE=$(grep -i 'name_image_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
         #Network Port
             FRONTEND_PORT=$(grep -i 'frontend_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             API_PORT=$(grep -i 'api_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
@@ -68,6 +68,7 @@
     fi
 
 #Deployement of conteneur PostGreSQL
+    echo "Debut du deploiement du conteneur $BACKEND"
     sudo podman run -d --name $BACKEND  --network appli-web-postgresql_network \
         --network $NETWORK_NAME \
         -e POSTGRES_DB=$DB_NAME \
@@ -75,8 +76,10 @@
         -e POSTGRES_PASSWORD=$DB_PASSWORD \
         -v $STORAGE_NAME:/bitnami/postgresql \
         $BACKEND_IMAGE
+    echo "Fin du deploiement du conteneur $BACKEND"
 
 #Deployement of conteneur Frontend
+    echo "Debut du deploiement du conteneur $FRONTEND"
     sudo podman run -d --name $FRONTEND --network appli-web-postgresql_network \
         --network $NETWORK_NAME \
         -e DB_HOST=$BACKEND \
@@ -85,15 +88,20 @@
         -e DB_PASSWORD=$DB_PASSWORD \
         -p $FRONTEND_PORT:5000 \
         $FRONTEND_IMAGE
+    echo "Fin du deploiement du conteneur $FRONTEND"
+
 #Deployement of conteneur API
+    echo "Debut du deploiement du conteneur $API"
     sudo podman run -d --name $API --network $NETWORK_NAME \
     -p $API_PORT:8000 $API_IMAGE
+    echo "Fin du deploiement du conteneur $API"
 
 #Deployement of conteneur Swagger
     sudo podman run -d --name $SWAGGER --network $NETWORK_NAME \
     -p $SWAGGER_PORT:5000 $SWAGGER_IMAGE
 
 #Deployement of conteneur PGAdmin
+    echo "Debut du deploiement du conteneur $PGADMIN"
     sudo podman run -d --name $PGADMIN --network $NETWORK_NAME \
         -e 'PGADMIN_DEFAULT_EMAIL='$PGADMIN_EMAIL \
         -e 'PGADMIN_DEFAULT_PASSWORD='$PGADMIN_PASSWORD \
@@ -103,7 +111,9 @@
         -v ../PGAdmin/config.json:/pgadmin4/servers.json \
         -p $PGADMIN_PORT:80 \
         $PGADMIN_IMAGE
+    echo "Fin du deploiement du conteneur $PGADMIN"
 
 #Deployement of conteneur for configuration of PGAdmin
-    sudo podman run --rm -d --name $PGCONFADMIN --network $NETWORK_NAME $PGCONFADMIN_IMAGE
-
+    echo "Debut du deploiement du conteneur $PGCONFADMIN"
+    sudo podman run -d --name $PGCONFADMIN --network $NETWORK_NAME $PGCONFADMIN_IMAGE
+    echo "Fin du deploiement du conteneur $PGCONFADMIN"
