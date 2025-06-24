@@ -24,12 +24,11 @@
             API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             SWAGGER=$(grep -i 'name_container_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN=$(grep -i 'name_container_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGCONFADMIN=$(grep -i 'name_container_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
         #Value for PGAdmin deployment
             PGADMIN_EMAIL=$(grep -i 'pgadmin_email' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_PASSWORD=$(grep -i 'pgadmin_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-            PGADMIN_PORT=$(grep -i 'pgadmin_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-        #Value for PGAdmin Conf deployment
-            PGCONFADMIN=$(grep -i 'name_container_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGADMIN_PORT=$(grep -i 'pgadmin_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')        
         #Network Port
             FRONTEND_PORT=$(grep -i 'frontend_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             API_PORT=$(grep -i 'api_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
@@ -97,8 +96,10 @@
     echo "Fin du deploiement du conteneur $API"
 
 #Deployement of conteneur Swagger
+    echo "Debut du deploiement du conteneur $SWAGGER"
     sudo podman run -d --name $SWAGGER --network $NETWORK_NAME \
     -p $SWAGGER_PORT:5000 $SWAGGER_IMAGE
+    echo "Fin du deploiement du conteneur $SWAGGER"
 
 #Deployement of conteneur PGAdmin
     echo "Debut du deploiement du conteneur $PGADMIN"
