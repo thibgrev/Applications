@@ -23,10 +23,13 @@
             API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             SWAGGER=$(grep -i 'name_container_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN=$(grep -i 'name_container_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-        #Value for PGAdmin deplyment
+        #Value for PGAdmin deployment
             PGADMIN_EMAIL=$(grep -i 'pgadmin_email' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_PASSWORD=$(grep -i 'pgadmin_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_PORT=$(grep -i 'pgadmin_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+        #Value for PGAdmin Conf deployment
+            PGCONFADMIN=$(grep -i 'name_container_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGCONFADMIN_IMAGE=$(grep -i 'name_image_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
         #Network Port
             FRONTEND_PORT=$(grep -i 'frontend_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             API_PORT=$(grep -i 'api_port' $CONFIG_FILE | awk -F ' = ' '{print $2}')
@@ -101,11 +104,6 @@
         -p $PGADMIN_PORT:80 \
         $PGADMIN_IMAGE
 
-# Attendre que pgAdmin soit prêt
-sleep 10
+#Deployement of conteneur for configuration of PGAdmin
+    sudo podman run --rm -d --name $PGCONFADMIN --network $NETWORK_NAME $PGCONFADMIN_IMAGE
 
-# Copier le script de configuration dans le conteneur pgAdmin
-sudo podman cp ../PGAdmin/setup_pgadmin.py $PGADMIN:/pgadmin4/setup_pgadmin.py
-
-# Exécuter le script de configuration de pgAdmin
-sudo podman exec -it $PGADMIN python /pgadmin4/setup_pgadmin.py
