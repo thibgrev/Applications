@@ -8,7 +8,7 @@
     BACKEND_IMAGE=$(grep -i 'name_image_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
     SWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-    PGCONFADMIN_IMAGE=$(grep -i 'name_image_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+    PGCONFADMIN_IMAGE=$(grep -i 'name_image_pgadm_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
 
 # Build de l'image frontend
 echo "Construction de l'image frontend..."
@@ -25,9 +25,5 @@ podman build -t $API_IMAGE ../API/
 # Build de l'image swagger
 echo "Construction de l'image swagger..."
 podman build -t $SWAGGER_IMAGE ../swagger/
-
-# Build de l'image configurator pgAdmin
-echo "Construction de l'image pgadmin configurator..."
-podman build -t $PGCONFADMIN_IMAGE ../PGAdmin_configurator/
 
 echo "Images podman construites."

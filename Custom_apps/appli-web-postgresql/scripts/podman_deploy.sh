@@ -17,14 +17,14 @@
             API_IMAGE=$(grep -i 'name_image_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_IMAGE=$(grep -i 'name_image_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             SWAGGER_IMAGE=$(grep -i 'name_image_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-            PGCONFADMIN_IMAGE=$(grep -i 'name_image_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGCONFADMIN_IMAGE=$(grep -i 'name_image_pgadm_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
         #Name of deployed conteneurs
             FRONTEND=$(grep -i 'name_container_frontend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             BACKEND=$(grep -i 'name_container_backend' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             API=$(grep -i 'name_container_api' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             SWAGGER=$(grep -i 'name_container_swagger' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN=$(grep -i 'name_container_pgadmin' $CONFIG_FILE | awk -F ' = ' '{print $2}')
-            PGCONFADMIN=$(grep -i 'name_container_pgadmin_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
+            PGCONFADMIN=$(grep -i 'name_container_pgadm_configurator' $CONFIG_FILE | awk -F ' = ' '{print $2}')
         #Value for PGAdmin deployment
             PGADMIN_EMAIL=$(grep -i 'pgadmin_email' $CONFIG_FILE | awk -F ' = ' '{print $2}')
             PGADMIN_PASSWORD=$(grep -i 'pgadmin_password' $CONFIG_FILE | awk -F ' = ' '{print $2}')
@@ -102,7 +102,7 @@
     echo "Fin du deploiement du conteneur $SWAGGER"
 
 #Deployement of conteneur PGAdmin
-    echo "Debut du deploiement du conteneur $PGADMIN"
+    echo "Debut du deploiement du conteneur $PGADMIN grace a $PGADMIN_IMAGE"
     sudo podman run -d --name $PGADMIN --network $NETWORK_NAME \
         -e 'PGADMIN_DEFAULT_EMAIL='$PGADMIN_EMAIL \
         -e 'PGADMIN_DEFAULT_PASSWORD='$PGADMIN_PASSWORD \
@@ -113,8 +113,3 @@
         -p $PGADMIN_PORT:80 \
         $PGADMIN_IMAGE
     echo "Fin du deploiement du conteneur $PGADMIN"
-
-#Deployement of conteneur for configuration of PGAdmin
-    echo "Debut du deploiement du conteneur $PGCONFADMIN"
-    sudo podman run -d --name $PGCONFADMIN --network $NETWORK_NAME $PGCONFADMIN_IMAGE
-    echo "Fin du deploiement du conteneur $PGCONFADMIN"
